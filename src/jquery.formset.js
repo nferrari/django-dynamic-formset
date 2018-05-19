@@ -12,7 +12,7 @@
 ;(function($) {
     $.fn.formset = function(opts)
     {
-        var options = $.extend({}, $.fn.formset.defaults, opts),
+        let options = $.extend({}, $.fn.formset.defaults, opts),
             flatExtraClasses = options.extraClasses.join(' '),
             totalForms = $('#id_' + options.prefix + '-TOTAL_FORMS'),
             maxForms = $('#id_' + options.prefix + '-MAX_NUM_FORMS'),
@@ -28,7 +28,7 @@
             },
 
             updateElementIndex = function(elem, prefix, ndx) {
-                var idRegex = new RegExp(prefix + '-(\\d+|__prefix__)-'),
+                let idRegex = new RegExp(prefix + '-(\\d+|__prefix__)-'),
                     replacement = prefix + '-' + ndx + '-';
                 if (elem.attr("for")) elem.attr("for", elem.attr("for").replace(idRegex, replacement));
                 if (elem.attr('id')) elem.attr('id', elem.attr('id').replace(idRegex, replacement));
@@ -53,10 +53,10 @@
             },
 
             insertDeleteLink = function(row) {
-                var delCssSelector = $.trim(options.deleteCssClass).replace(/\s+/g, '.'),
+                let delCssSelector = $.trim(options.deleteCssClass).replace(/\s+/g, '.'),
                     addCssSelector = $.trim(options.addCssClass).replace(/\s+/g, '.');
 
-                var delButtonHTML = '<button class="' + options.deleteCssClass + '" type="button">' + options.deleteText +'</button>';
+                let delButtonHTML = '<button class="' + options.deleteCssClass + '" type="button">' + options.deleteText +'</button>';
                 if (options.deleteContainerClass) {
                     // If we have a specific container for the remove button,
                     // place it as the last child of that container:
@@ -75,15 +75,17 @@
                     row.append(delButtonHTML);
                 }
 
+                let delButton = row.find('button.' + delCssSelector);
+
                 // Check if we're under the minimum number of forms - not to display delete link at rendering
                 if (!showDeleteLinks()){
-                    row.find('a.' + delCssSelector).hide();
+                    delButton.hide();
                 }
 
-                row.find('a.' + delCssSelector).click(function() {
-                    var row = $(this).parents('.' + options.formCssClass),
+                delButton.click(function() {
+                    let row = $(this).parents('.' + options.formCssClass),
                         del = row.find('input:hidden[id $= "-DELETE"]'),
-                        buttonRow = row.siblings("a." + addCssSelector + ', .' + options.formCssClass + '-add'),
+                        addButton = row.siblings("button." + addCssSelector + ', .' + options.formCssClass + '-add'),
                         forms;
                     if (del.length) {
                         // We're dealing with an inline formset.
@@ -98,7 +100,7 @@
                         forms = $('.' + options.formCssClass).not('.formset-custom-template');
                         totalForms.val(forms.length);
                     }
-                    for (var i=0, formCount=forms.length; i<formCount; i++) {
+                    for (let i=0, formCount=forms.length; i<formCount; i++) {
                         // Apply `extraClasses` to form rows so they're nicely alternating:
                         applyExtraClasses(forms.eq(i), i);
                         if (!del.length) {
@@ -111,10 +113,10 @@
                     }
                     // Check if we've reached the minimum number of forms - hide all delete link(s)
                     if (!showDeleteLinks()){
-                        $('a.' + delCssSelector).each(function(){$(this).hide();});
+                        $('button.' + delCssSelector).each(function(){$(this).hide();});
                     }
                     // Check if we need to show the add button:
-                    if (buttonRow.is(':hidden') && showAddButton()) buttonRow.show();
+                    if (addButton.is(':hidden') && showAddButton()) addButton.show();
                     // If a post-delete callback was provided, call it with the deleted form:
                     if (options.removed) options.removed(row);
                     return false;
@@ -122,7 +124,7 @@
             };
 
         $$.each(function(i) {
-            var row = $(this),
+            let row = $(this),
                 del = row.find('input:checkbox[id $= "-DELETE"]');
             if (del.length) {
                 // If you specify "can_delete = True" when creating an inline formset,
@@ -150,7 +152,7 @@
         });
 
         if ($$.length) {
-            var hideAddButton = !showAddButton(),
+            let hideAddButton = !showAddButton(),
                 addButton, template;
             if (options.formTemplate) {
                 // If a form template was specified, we'll clone it to generate new form instances:
@@ -167,7 +169,7 @@
                 template.find('input:hidden[id $= "-DELETE"]').remove();
                 // Clear all cloned fields, except those the user wants to keep (thanks to brunogola for the suggestion):
                 template.find(childElementSelector).not(options.keepFieldValues).each(function() {
-                    var elem = $(this);
+                    let elem = $(this);
                     // If this is a checkbox or radiobutton, uncheck it.
                     // This fixes Issue 1, reported by Wilson.Andrew.J:
                     if (elem.is('input:checkbox') || elem.is('input:radio')) {
@@ -180,17 +182,17 @@
             // FIXME: Perhaps using $.data would be a better idea?
             options.formTemplate = template;
 
-            var addButtonHTML = '<button class="' + options.addCssClass + '" type="button">' + options.addText + '</button>';
+            let addButtonHTML = '<button class="' + options.addCssClass + '" type="button">' + options.addText + '</button>';
             if (options.addContainerClass) {
                 // If we have a specific container for the "add" button,
                 // place it as the last child of that container:
-                var addContainer = $('[class*="' + options.addContainerClass + '"');
+                let addContainer = $('[class*="' + options.addContainerClass + '"');
                 addContainer.append(addButtonHTML);
                 addButton = addContainer.find('[class="' + options.addCssClass + '"]');
             } else if ($$.is('TR')) {
                 // If forms are laid out as table rows, insert the
                 // "add" button in a new table row:
-                var numCols = $$.eq(0).children().length,   // This is a bit of an assumption :|
+                let numCols = $$.eq(0).children().length,   // This is a bit of an assumption :|
                     buttonRow = $('<tr><td colspan="' + numCols + '">' + addButtonHTML + '</tr>').addClass(options.formCssClass + '-add');
                 $$.parent().append(buttonRow);
                 addButton = buttonRow.find('a');
@@ -203,7 +205,7 @@
             if (hideAddButton) addButton.hide();
 
             addButton.click(function() {
-                var formCount = parseInt(totalForms.val()),
+                let formCount = parseInt(totalForms.val()),
                     row = options.formTemplate.clone(true).removeClass('formset-custom-template'),
                     buttonRow = $($(this).parents('tr.' + options.formCssClass + '-add').get(0) || this),
                     delCssSelector = $.trim(options.deleteCssClass).replace(/\s+/g, '.');
@@ -215,7 +217,7 @@
                 totalForms.val(formCount + 1);
                 // Check if we're above the minimum allowed number of forms -> show all delete link(s)
                 if (showDeleteLinks()){
-                    $('a.' + delCssSelector).each(function(){$(this).show();});
+                    $('button.' + delCssSelector).each(function(){$(this).show();});
                 }
                 // Check if we've exceeded the maximum allowed number of forms:
                 if (!showAddButton()) buttonRow.hide();
