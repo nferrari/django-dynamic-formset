@@ -195,7 +195,7 @@
                 let numCols = $$.eq(0).children().length,   // This is a bit of an assumption :|
                     buttonRow = $('<tr><td colspan="' + numCols + '">' + addButtonHTML + '</tr>').addClass(options.formCssClass + '-add');
                 $$.parent().append(buttonRow);
-                addButton = buttonRow.find('a');
+                addButton = buttonRow.find('button');
             } else {
                 // Otherwise, insert it immediately after the last form:
                 $$.filter(':last').after(addButtonHTML);
@@ -207,10 +207,11 @@
             addButton.click(function() {
                 let formCount = parseInt(totalForms.val()),
                     row = options.formTemplate.clone(true).removeClass('formset-custom-template'),
+                    lastRow = $('.' + options.formCssClass).filter(':last'),
                     buttonRow = $($(this).parents('tr.' + options.formCssClass + '-add').get(0) || this),
                     delCssSelector = $.trim(options.deleteCssClass).replace(/\s+/g, '.');
                 applyExtraClasses(row, formCount);
-                row.insertBefore(buttonRow).show();
+                row.insertAfter(lastRow).show();
                 row.find(childElementSelector).each(function() {
                     updateElementIndex($(this), options.prefix, formCount);
                 });
