@@ -56,26 +56,32 @@
                 let delCssSelector = $.trim(options.deleteCssClass).replace(/\s+/g, '.'),
                     addCssSelector = $.trim(options.addCssClass).replace(/\s+/g, '.');
 
-                let delButtonHTML = '<button class="' + options.deleteCssClass + '" type="button">' + options.deleteText +'</button>';
-                if (options.deleteContainerClass) {
-                    // If we have a specific container for the remove button,
-                    // place it as the last child of that container:
-                    row.find('[class*="' + options.deleteContainerClass + '"]').append(delButtonHTML);
-                } else if (row.is('TR')) {
-                    // If the forms are laid out in table rows, insert
-                    // the remove button into the last table cell:
-                    row.children(':last').append(deleteButtonHTML);
-                } else if (row.is('UL') || row.is('OL')) {
-                    // If they're laid out as an ordered/unordered list,
-                    // insert an <li> after the last list item:
-                    row.append('<li>' + deleteButtonHTML + '</li>');
-                } else {
-                    // Otherwise, just insert the remove button as the
-                    // last child element of the form's container:
-                    row.append(delButtonHTML);
+                let delButton = row.find('button.' + delCssSelector);
+                if (!delButton.length) {
+                    // Didn't find a delete button in the row already. Let's add one.
+                    let delButtonHTML = '<button class="' + options.deleteCssClass + '" type="button">' + options.deleteText +'</button>';
+                    if (options.deleteContainerClass) {
+                        // If we have a specific container for the remove button,
+                        // place it as the last child of that container:
+                        row.find('[class*="' + options.deleteContainerClass + '"]').append(delButtonHTML);
+                    } else if (row.is('TR')) {
+                        // If the forms are laid out in table rows, insert
+                        // the remove button into the last table cell:
+                        row.children(':last').append(deleteButtonHTML);
+                    } else if (row.is('UL') || row.is('OL')) {
+                        // If they're laid out as an ordered/unordered list,
+                        // insert an <li> after the last list item:
+                        row.append('<li>' + deleteButtonHTML + '</li>');
+                    } else {
+                        // Otherwise, just insert the remove button as the
+                        // last child element of the form's container:
+                        row.append(delButtonHTML);
+                    }
+
+                    // And now we can use it!
+                    delButton = row.find('button.' + delCssSelector);
                 }
 
-                let delButton = row.find('button.' + delCssSelector);
 
                 // Check if we're under the minimum number of forms - not to display delete link at rendering
                 if (!showDeleteLinks()){
@@ -162,6 +168,7 @@
                     updateElementIndex($(this), options.prefix, '__prefix__');
                 });
                 insertDeleteLink(template);
+                template.hide();
             } else {
                 // Otherwise, use the last form in the formset; this works much better if you've got
                 // extra (>= 1) forms (thnaks to justhamade for pointing this out):
